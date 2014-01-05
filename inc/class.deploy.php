@@ -179,6 +179,9 @@ abstract class Deploy {
 			// Discard any changes to tracked files since our last deploy
 			exec( 'git reset --hard HEAD', $output );
 
+			// Fetch from remote
+			exec( 'git fetch ' . $this->_remote );
+
 			// Update the local repository
 			exec( 'git pull ' . $this->_remote . ' ' . $this->_branch, $output );
 
