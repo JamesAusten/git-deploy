@@ -22,14 +22,35 @@ class BitBucket_Deploy extends Deploy {
 	function __construct( $payload ) {
 		$payload = json_decode( stripslashes( $_POST['payload'] ), true );
 		$name = $payload['repository']['name'];
-		$this->log( 'Received push to ' . $name . ' on branch ' . $payload['commits'][0]['branch'] . ' (' . $payload['commits'][0]['raw_author'] . ')' );
 		
-		if ( isset( parent::$repos[ $name ] ) && parent::$repos[ $name ]['branch'] === $payload['commits'][0]['branch'] ) {
+		$branch = '';
+		
+		foreach( $payload['commits'] as $commit ) {
+			if ( strlen( $commit['branch'] ) > 0 ) {
+				$branch = $commit['branch'];
+				break;
+			}
+		}
+		
+		$this->log( 'Received push to ' . $name . ' on branch ' . $branch . ' (' . $payload['commits'][0]['raw_author'] . ') ' );
+		
+		if ( isset( parent::$repos[ $name ] ) && parent::$repos[ $name ]['branch'] === $branch ) {
+			
 			$data = parent::$repos[ $name ];
 			$data['commit'] = $payload['commits'][0]['node'];
 			parent::__construct( $name, $data );
+			
 		} else {
-			$this->log( 'Failed, name missmatch' );
+
+			// Dump the payload
+			if (!file_exists('errors/')) mkdir('errors');
+
+			$f = fopen('errors/' . date('Y-m-d-H-i-s') . '-' . str_replace(' ', '-', $name) . '.txt', 'w+');
+			fwrite($f, print_r( $payload, true ));
+			@fclose($f);
+			
+			$this->log( $name . ' update failed, branch missmatch ( ' . parent::$repos[ $name ]['branch'] . ' <> ' . $branch . ' ) ' );
+			
 		}
 	}
 }
