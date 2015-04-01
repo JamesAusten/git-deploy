@@ -34,7 +34,7 @@ class BitBucket_Deploy extends Deploy {
 		
 		$this->log( 'Received push to ' . $name . ' on branch ' . $branch . ' (' . $payload['commits'][0]['raw_author'] . ') ' );
 		
-		if ( isset( parent::$repos[ $name ] ) && parent::$repos[ $name ]['branch'] === $branch ) {
+		if ( isset( parent::$repos[ $name ] ) /*&& parent::$repos[ $name ]['branch'] === $branch*/ ) {
 			
 			$data = parent::$repos[ $name ];
 			$data['commit'] = $payload['commits'][0]['node'];

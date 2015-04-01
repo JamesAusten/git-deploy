@@ -183,7 +183,7 @@ abstract class Deploy {
 			exec( 'git fetch ' . $this->_remote );
 
 			// Update the local repository
-			exec( 'git pull ' . $this->_remote . ' ' . $this->_branch, $output );
+			exec( 'git pull ' . $this->_remote /*. ' ' . $this->_branch*/, $output );
 
 			// Secure the .git directory
 			echo exec( 'chmod -R og-rx .git' );
